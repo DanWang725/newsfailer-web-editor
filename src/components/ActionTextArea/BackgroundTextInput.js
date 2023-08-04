@@ -12,5 +12,7 @@ export const BackgroundTextInput = ({ id, selectionActiveHandler, ...props }) =>
     }
     return (<span {...props} onMouseUpCapture={(stuff)=>handleClick(stuff)}>
         <input type="text" ref={currentRef} value={currentText} onChange={(e)=>setCurrentText(e.target.value)} />
+        <text>test</text>
+
     </span>);
 }
