@@ -1,9 +1,14 @@
-import React, { useState } from 'react';
-import { BackgroundTextInput } from './BackgroundTextInput';
+import React, { useState } from "react";
+import { BackgroundTextInput } from "./BackgroundTextInput";
 
-export const ActionTextArea = ({selectionActiveHandler, ...props}) => {
+export const ActionTextArea = ({ selectionActiveHandler, ...props }) => {
+  const [textArea] = useState([
+    <BackgroundTextInput
+      id={props.id}
+      key={props.id}
+      selectionActiveHandler={selectionActiveHandler}
+    />,
+  ]);
 
-    const [textArea] = useState([<BackgroundTextInput id={props.id} selectionActiveHandler={selectionActiveHandler}/>]);
-    
-    return (textArea)
-}
+  return textArea;
+};
