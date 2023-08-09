@@ -3,6 +3,7 @@ import React, { useState } from "react";
 import { TextSpan } from "../TextSpan/TextSpan";
 import { consoleLogSelect } from "./utils";
 import { useSelectionMemory } from "./useSelectionMemory";
+import { EditableMultiSpanContent } from "./EditableMultiSpanContent";
 // import ContentEditable from "react-contenteditable";
 
 export const Editor = () => {
@@ -16,7 +17,7 @@ export const Editor = () => {
 
   const [textContent, setSelectedText] = useState([
     <TextSpan
-      text={"Some Text"}
+      text={"Some Tasdfasdfasdf asdfasdfasdfasd ext"}
       id={0}
       key={0}
       mouseUpCapture={consoleLogSelect}
@@ -26,17 +27,14 @@ export const Editor = () => {
   const reformatText = () => {
     if (!isSelectionInTextArea) return;
 
-    // console.log(selectedText);
-    // console.log(selectedText.filter((word) => `${word.props.id}` === selection?.anchorNode?.parentElement?.id));
     setSelectedText(
-      textContent.reduce((acc, word, index) => {
-        // console.log(word.props.text, index);
+      textContent.reduce((accumulator, word, index) => {
         if (index < baseElement.id || index > extentElement.id) {
-          acc.push(
+          accumulator.push(
             <TextSpan
               text={word.props.text}
-              id={acc.length}
-              key={acc.length}
+              id={accumulator.length}
+              key={accumulator.length}
               mouseUpCapture={consoleLogSelect}
             ></TextSpan>
           );
@@ -44,17 +42,17 @@ export const Editor = () => {
           let spanText = word.props.text;
           if (index == baseElement.id) {
             baseElement.offset &&
-              acc.push(
+              accumulator.push(
                 <TextSpan
                   text={spanText.substring(0, baseElement.offset)}
-                  id={acc.length}
+                  id={accumulator.length}
                   mouseUpCapture={consoleLogSelect}
                 ></TextSpan>
               );
-            acc.push(
+            accumulator.push(
               <TextSpan
                 text={selText}
-                id={acc.length}
+                id={accumulator.length}
                 mouseUpCapture={consoleLogSelect}
               ></TextSpan>
             );
@@ -74,20 +72,20 @@ export const Editor = () => {
 
           if (index == extentElement.id) {
             extentElement.offset !== word.props.text.length &&
-              acc.push(
+              accumulator.push(
                 <TextSpan
                   text={spanText.substring(
                     extentElement.offset,
                     word.props.text.length
                   )}
-                  id={acc.length}
+                  id={accumulator.length}
                   mouseUpCapture={consoleLogSelect}
                 ></TextSpan>
               );
           }
         }
 
-        return acc;
+        return accumulator;
       }, [])
     );
   };
@@ -103,7 +101,10 @@ export const Editor = () => {
       {/* <ActionTextArea currentRef={currentRef} id={1} selectionActiveHandler={selectionActiveHandler}/>
         <ActionTextArea currentRef={currentRef} id={2} selectionActiveHandler={selectionActiveHandler}/>
         <ActionTextArea currentRef={currentRef} id={3} selectionActiveHandler={selectionActiveHandler}/> */}
-      <span contentEditable={true}>{textContent}</span>
+      <EditableMultiSpanContent></EditableMultiSpanContent>
+      <span contentEditable={true} onChange={(e) => console.log(e)}>
+        {textContent}
+      </span>
       <button onClick={reformatText}>Redo Spans</button>
       <button onClick={reformatText}>Redo Spans</button>
       <button onClick={reformatText}>Redo Spans</button>
