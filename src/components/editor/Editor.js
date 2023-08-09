@@ -3,6 +3,7 @@ import React, { useState } from "react";
 import { TextSpan } from "../TextSpan/TextSpan";
 import { consoleLogSelect } from "./utils";
 import { useSelectionMemory } from "./useSelectionMemory";
+// import ContentEditable from "react-contenteditable";
 
 export const Editor = () => {
   const {
@@ -13,29 +14,14 @@ export const Editor = () => {
     parentDiv,
   } = useSelectionMemory("editor-text");
 
-  const [textContent, setSelectedText] = useState(
-    "this is a tesdafsdfst text thaasdfsd should be a little long"
-      .split(" ")
-      .map((word, index) => {
-        return (
-          <TextSpan
-            text={word}
-            id={index}
-            key={index}
-            mouseUpCapture={consoleLogSelect}
-          ></TextSpan>
-        );
-      })
-  );
-
-  // const currentRef = useRef(null);
-
-  // useEffect(() => {
-  //   if (isSelectionInTextArea) {
-  //     // console.log(true);
-  //     reformatText();
-  //   }
-  // }, [isSelectionInTextArea]);
+  const [textContent, setSelectedText] = useState([
+    <TextSpan
+      text={"Some Text"}
+      id={0}
+      key={0}
+      mouseUpCapture={consoleLogSelect}
+    ></TextSpan>,
+  ]);
 
   const reformatText = () => {
     if (!isSelectionInTextArea) return;
@@ -117,8 +103,10 @@ export const Editor = () => {
       {/* <ActionTextArea currentRef={currentRef} id={1} selectionActiveHandler={selectionActiveHandler}/>
         <ActionTextArea currentRef={currentRef} id={2} selectionActiveHandler={selectionActiveHandler}/>
         <ActionTextArea currentRef={currentRef} id={3} selectionActiveHandler={selectionActiveHandler}/> */}
-      {textContent}
-      <button onClick={reformatText}></button>
+      <span contentEditable={true}>{textContent}</span>
+      <button onClick={reformatText}>Redo Spans</button>
+      <button onClick={reformatText}>Redo Spans</button>
+      <button onClick={reformatText}>Redo Spans</button>
     </div>
   );
 };
