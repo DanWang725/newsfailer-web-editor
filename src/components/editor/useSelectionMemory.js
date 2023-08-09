@@ -5,6 +5,8 @@ export const useSelectionMemory = (elementName) => {
     key: null,
     offset: null,
   });
+  const [selectedText, setSelectedText] = useState("");
+  const [parentDiv, setParentDiv] = useState(null);
   const [isSelectionInTextArea, setIsSelectionInTextArea] = useState(false);
 
   useEffect(() => {
@@ -13,18 +15,26 @@ export const useSelectionMemory = (elementName) => {
       window.removeEventListener("mouseup", handleCaptureSelection);
     };
   }, []);
-  unm;
 
   const handleCaptureSelection = () => {
     const selection = window.getSelection();
+    // console.log(selection);
+    console.log(selection?.anchorNode?.parentElement?.parentElement.children);
+    if (selection.type !== "Range") {
+      return;
+    }
     if (
-      selection?.anchorNode?.parentElement?.name !== "editor-text" ||
-      selection?.extentNode?.parentElement?.name !== "editor-text"
+      selection?.anchorNode?.parentElement?.attributes?.name?.value !==
+        elementName ||
+      selection?.extentNode?.parentElement?.attributes?.name?.value !==
+        elementName
     ) {
+      console.log("is not selected");
       setIsSelectionInTextArea(false);
       return;
     }
-
+    setParentDiv(selection?.anchorNode?.parentElement?.parentElement);
+    console.log("is selected");
     setIsSelectionInTextArea(true);
     const baseElement = {
       id: selection?.baseNode?.parentElement?.id,
@@ -40,7 +50,14 @@ export const useSelectionMemory = (elementName) => {
     setExtentElement(
       baseElement.id <= extentElement.id ? extentElement : baseElement
     );
+    setSelectedText(selection.toString());
   };
 
-  return { isSelectionInTextArea, baseElement, extentElement };
+  return {
+    isSelectionInTextArea,
+    baseElement,
+    extentElement,
+    selectedText,
+    parentDiv,
+  };
 };

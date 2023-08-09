@@ -1,9 +1,6 @@
 import React, { useState, useRef } from "react";
-export const BackgroundTextInput = ({
-  id,
-  selectionActiveHandler,
-  ...props
-}) => {
+import PropTypes from "prop-types";
+export const BackgroundTextInput = ({ selectionActiveHandler, ...props }) => {
   const [currentText, setCurrentText] = useState("");
   const currentRef = useRef(null);
 
@@ -28,4 +25,7 @@ export const BackgroundTextInput = ({
       <text>test</text>
     </span>
   );
+};
+BackgroundTextInput.propTyes = {
+  selectionActiveHandler: PropTypes.func,
 };

@@ -1,14 +1,19 @@
-import React, { useState, useRef, useEffect } from "react";
-import { ActionTextArea } from "../ActionTextArea/ActionTextArea";
+import React, { useState } from "react";
+// import { ActionTextArea } from "../ActionTextArea/ActionTextArea";
 import { TextSpan } from "../TextSpan/TextSpan";
 import { consoleLogSelect } from "./utils";
 import { useSelectionMemory } from "./useSelectionMemory";
 
 export const Editor = () => {
-  const { isSelectionInTextArea, baseElement, extentElement } =
-    useSelectionMemory("editor-text");
+  const {
+    isSelectionInTextArea,
+    baseElement,
+    extentElement,
+    selectedText: selText,
+    parentDiv,
+  } = useSelectionMemory("editor-text");
 
-  const [selectedText, setSelectedText] = useState(
+  const [textContent, setSelectedText] = useState(
     "this is a tesdafsdfst text thaasdfsd should be a little long"
       .split(" ")
       .map((word, index) => {
@@ -22,21 +27,25 @@ export const Editor = () => {
         );
       })
   );
-  const currentRef = useRef(null);
 
-  useEffect(() => {
-    if (isSelectionInTextArea) {
-      reformatText();
-    }
-  }, [isSelectionInTextArea]);
+  // const currentRef = useRef(null);
+
+  // useEffect(() => {
+  //   if (isSelectionInTextArea) {
+  //     // console.log(true);
+  //     reformatText();
+  //   }
+  // }, [isSelectionInTextArea]);
 
   const reformatText = () => {
+    if (!isSelectionInTextArea) return;
+
     // console.log(selectedText);
     // console.log(selectedText.filter((word) => `${word.props.id}` === selection?.anchorNode?.parentElement?.id));
     setSelectedText(
-      selectedText.reduce((acc, word, index) => {
+      textContent.reduce((acc, word, index) => {
         // console.log(word.props.text, index);
-        if (index > extentElementId || index < baseElementId) {
+        if (index < baseElement.id || index > extentElement.id) {
           acc.push(
             <TextSpan
               text={word.props.text}
@@ -46,57 +55,49 @@ export const Editor = () => {
             ></TextSpan>
           );
         } else {
-          let editMe = word.props.text;
-          if (index === baseElementId) {
-            editMe = word.props.text.substring(
-              selection?.anchorOffset,
-              index === extentElementId
-                ? selection?.extentOffset
-                : word.props.text.length
-            );
+          let spanText = word.props.text;
+          if (index == baseElement.id) {
+            baseElement.offset &&
+              acc.push(
+                <TextSpan
+                  text={spanText.substring(0, baseElement.offset)}
+                  id={acc.length}
+                  mouseUpCapture={consoleLogSelect}
+                ></TextSpan>
+              );
             acc.push(
               <TextSpan
-                text={word.props.text.substring(0, selection?.anchorOffset)}
+                text={selText}
                 id={acc.length}
                 mouseUpCapture={consoleLogSelect}
               ></TextSpan>
             );
-            acc.push(
-              <TextSpan
-                text={""}
-                id={acc.length}
-                mouseUpCapture={consoleLogSelect}
-              ></TextSpan>
-            );
+            // window
+            //   .getSelection()
+            //   .setBaseAndExtent(
+            //     baseElement.id,
+            //     0,
+            //     baseElement.id,
+            //     selText.length - 1
+            //   );
+            console.log(window.getSelection());
+            // window.getSelection().modify("extend", "forward", selText.length);
+            // window.getSelection().extend(selText.length);
+            console.log(parentDiv.children[baseElement.id]);
           }
-          if (acc.length > 0 && getLastElement(acc).props.text !== "") {
-            acc.push(
-              <TextSpan
-                text={""}
-                id={acc.length}
-                mouseUpCapture={consoleLogSelect}
-              ></TextSpan>
-            );
-          }
-          acc[acc.length - 1] = (
-            <TextSpan
-              text={getLastElement(acc).props.text.concat(editMe)}
-              id={acc.length - 1}
-              mouseUpCapture={consoleLogSelect}
-            ></TextSpan>
-          );
 
-          if (index === extentElementId) {
-            acc.push(
-              <TextSpan
-                text={word.props.text.substring(
-                  selection?.extentOffset,
-                  word.props.text.length
-                )}
-                id={acc.length}
-                mouseUpCapture={consoleLogSelect}
-              ></TextSpan>
-            );
+          if (index == extentElement.id) {
+            extentElement.offset !== word.props.text.length &&
+              acc.push(
+                <TextSpan
+                  text={spanText.substring(
+                    extentElement.offset,
+                    word.props.text.length
+                  )}
+                  id={acc.length}
+                  mouseUpCapture={consoleLogSelect}
+                ></TextSpan>
+              );
           }
         }
 
@@ -109,10 +110,6 @@ export const Editor = () => {
   //     setSelectedText(selection);
   // }
 
-  const getLastElement = (arr) => {
-    return arr?.[arr.length - 1];
-  };
-
   //init text
 
   return (
@@ -120,7 +117,7 @@ export const Editor = () => {
       {/* <ActionTextArea currentRef={currentRef} id={1} selectionActiveHandler={selectionActiveHandler}/>
         <ActionTextArea currentRef={currentRef} id={2} selectionActiveHandler={selectionActiveHandler}/>
         <ActionTextArea currentRef={currentRef} id={3} selectionActiveHandler={selectionActiveHandler}/> */}
-      {selectedText}
+      {textContent}
       <button onClick={reformatText}></button>
     </div>
   );
